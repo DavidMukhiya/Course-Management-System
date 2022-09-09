@@ -1,71 +1,52 @@
 package com.genpark.SpringBootDemoApp.Service;
 
+import com.genpark.SpringBootDemoApp.Dao.CourseDao;
 import com.genpark.SpringBootDemoApp.Entity.Course;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CourseServiceImpl implements CourseService {
 
-    List<Course> list;
+    @Autowired
+    private CourseDao courseDao;
 
-    public CourseServiceImpl() {
-        list = new ArrayList<>();
-        list.add(new Course(101, "Spring Framework", "Pradeep"));
-        list.add(new Course(102, "Spring Boot", "Sukvinder"));
-        list.add(new Course(103, "Web Application", "Adam"));
-    }
 
     @Override
     public List<Course> getAllCourse() {
-        return list;
+        return this.courseDao.findAll();
     }
 
     @Override
-    public Course getCourseById(int CourseId) {
-        Course c = null;
-        for (Course course : list) {
-            if (course.getCourseid() == CourseId) {
-                c = course;
-                break;
-            }
+    public Course getCourseById(int courseID) {
+        Optional<Course> c = this.courseDao.findById(courseID);
+        Course course = null;
+        if (c.isPresent()) {
+            course = c.get();
+        } else {
+            throw new RuntimeException("Course not found for id :: " + courseID);
         }
-        return c;
-    }
-
-    @Override
-    public Course addCourse(Course course) {
-        list.add(course);
         return course;
     }
 
     @Override
-    public Course updateCourse(Course course) {
-        String title = course.getTitle();
-        String instructor = course.getInstructor();
-        Course e = null;
-        for (Course cour : list) {
-            if (cour.getCourseid() == course.getCourseid()) {
-                cour.setTitle(title);
-                cour.setInstructor(instructor);
-                e = cour;
-                break;
-            }
-        }
-        return e;
+    public Course addCourse(Course course) {
+        return this.courseDao.save(course);
     }
 
     @Override
-    public String deleteCourseById(int courseId){
-        for(Course course : list){
-            if(course.getCourseid()==courseId){
-                list.remove(course);
-            }
-        }
-        return "Deleted Sucessfully with Course ID "+courseId;
+    public Course updateCourse(Course course) {
+        return this.courseDao.save(course);
     }
 
+    @Override
+    public String deleteCourseById(int courseId) {
+        this.courseDao.deleteById(courseId);
+        return "Deleted Sucessfully with Course ID " + courseId;
+    }
 }

@@ -1,6 +1,15 @@
 package com.genpark.SpringBootDemoApp.Entity;
 
+import jdk.jfr.Enabled;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name="tbl_courses")
 public class Course {
+    @Id
+    @Column(name = "c_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private int courseid;
     private String title;
     private String instructor;
@@ -8,8 +17,7 @@ public class Course {
     public Course() {
     }
 
-    public Course(int courseid, String title, String instructor) {
-        this.courseid = courseid;
+    public Course(String title, String instructor) {
         this.title = title;
         this.instructor = instructor;
     }
